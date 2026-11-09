@@ -1,8 +1,4 @@
-/**
- * Represents an order containing up to three menu items for one customer.
- * @author Romer Enardecido
- * @version 1.0
- */
+
 public class Order {
     private Customer customer;
     private MenuItem item1;
@@ -12,11 +8,7 @@ public class Order {
     private String orderId;
     private double appliedVoucher;
 
-    /**
-     * Creates an order for a customer.
-     * @param orderId order identification
-     * @param customer customer placing the order
-     */
+   
     public Order(String orderId, Customer customer) {
         this.orderId = orderId;
         this.customer = customer;
@@ -27,11 +19,7 @@ public class Order {
         appliedVoucher = 0.0;
     }
 
-    /**
-     * Adds a menu item to the first empty slot.
-     * @param item menu item to add
-     * @return true if added; otherwise false
-     */
+   
     public boolean addItem(MenuItem item) {
         if (item == null) {
             System.out.println("Invalid menu item.");
@@ -68,10 +56,6 @@ public class Order {
         return subtotal;
     }
 
-    /**
-     * Calculates the total after a student discount, if applicable.
-     * @return total after discount
-     */
     public double computeTotal() {
         appliedVoucher = 0.0;
         double subtotal = computeSubtotal();
@@ -83,11 +67,6 @@ public class Order {
         }
     }
 
-    /**
-     * Calculates the discounted total after subtracting a voucher.
-     * @param voucher voucher amount in pesos
-     * @return final total, never below zero
-     */
     public double computeTotal(double voucher) {
         double total = computeTotal();
         // Negative voucher values are not accepted.
@@ -102,9 +81,6 @@ public class Order {
         return total;
     }
 
-    /**
-     * Prints the receipt and updates the customer's loyalty points.
-     */
     public void printReceipt() {
         double subtotal = computeSubtotal();
         double discount = customer.isStudent() ? subtotal * 0.10 : 0.0;
@@ -131,11 +107,6 @@ public class Order {
         customer.addPoints(total);
         System.out.println("Loyalty points: " + customer.getLoyaltyPoints());
     }
-
-    /**
-     * Prints one item and its computed price.
-     * @param item item to print
-     */
     private void printItem(MenuItem item) {
         if (item != null) {
             System.out.printf("%-43s %.2f%n",
