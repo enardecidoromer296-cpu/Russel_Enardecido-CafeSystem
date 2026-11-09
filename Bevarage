@@ -1,0 +1,722 @@
+/**
+ * Represents a beverage whose price depends on its size.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public class Beverage extends MenuItem {
+    private String size;
+
+    /** Creates a small beverage with default menu-item values. */
+    public Beverage() {
+        super();
+        size = "S";
+    }
+
+    /**
+     * Creates a beverage with the supplied details.
+     * @param name beverage name
+     * @param basePrice beverage base price
+     * @param itemCode beverage code
+     * @param size beverage size: S, M, or L
+     */
+    public Beverage(String name, double basePrice, String itemCode, String size) {
+        super(name, basePrice, itemCode);
+        this.size = "S";
+        setSize(size);
+    }
+
+    /**
+     * Computes the price based on beverage size.
+     * @return final beverage price
+     */
+    @Override
+    public double computePrice() {
+        // Large beverages add 25 pesos to the base price.
+        if (size.equals("L")) {
+            return basePrice + 25;
+        // Medium beverages add 15 pesos to the base price.
+        } else if (size.equals("M")) {
+            return basePrice + 15;
+        } else {
+            return basePrice;
+        }
+    }
+
+    /**
+     * Returns the beverage description including its size.
+     * @return beverage description
+     */
+    @Override
+    public String getDescription() {
+        return super.getDescription() + " Size: " + size;
+    }
+
+    /** @return the beverage size */
+    public String getSize() { return size; }
+
+    /**
+     * Sets the size only when it is S, M, or L.
+     * @param size requested beverage size
+     */
+    public void setSize(String size) {
+        if ("S".equals(size) || "M".equals(size) || "L".equals(size)) {
+            this.size = size;
+        }
+    }
+}
+
+/**
+ * Runs the Campus Cafe Ordering System demonstration.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public class CafeApp {
+    /**
+     * Creates sample customers, menu items, orders, and receipts.
+     * @param args command-line arguments
+     */
+    public static void main(String[] args) {
+        // Create customers using different overloaded constructors.
+        Customer customer1 = new Customer("Ana Reyes", true);
+        Customer customer2 = new Customer("Ben Cruz");
+
+        // Create a beverage, pastry, and meal using parameterized constructors.
+        Beverage latte = new Beverage("Iced Latte", 95.00, "B-01", "L");
+        Pastry ensaymada = new Pastry("Ensaymada", 45.00, "P-01", true);
+        Meal adobo = new Meal("Chicken Adobo", 110.00, "M-01", true, 1);
+
+        // Create default pastry and meal objects, then configure them with setters.
+        Pastry cookie = new Pastry();
+        cookie.setName("Cookie");
+        cookie.setBasePrice(30.00);
+        cookie.setItemCode("P-02");
+
+        Meal defaultMeal = new Meal();
+        defaultMeal.setName("Rice Meal");
+        defaultMeal.setBasePrice(100.00);
+        defaultMeal.setItemCode("M-03");
+
+        // Create the first order and demonstrate the three-item limit.
+        Order order1 = new Order("1001", customer1);
+        order1.addItem(latte);
+        order1.addItem(ensaymada);
+        order1.addItem(adobo);
+        order1.addItem(cookie);
+
+        // Demonstrate rejection of invalid data without changing the valid price.
+        latte.setBasePrice(-5);
+        order1.printReceipt();
+
+        // Create a default beverage and fill it using setters.
+        Beverage hotChocolate = new Beverage();
+        hotChocolate.setName("Hot Chocolate");
+        hotChocolate.setBasePrice(-5);
+        hotChocolate.setBasePrice(80.00);
+        hotChocolate.setItemCode("B-02");
+        hotChocolate.setSize("M");
+
+        // Create the second meal with a parameterized constructor.
+        Meal beefTapa = new Meal("Beef Tapa", 130.00, "M-02", false, 0);
+
+        // Create the second order, apply a voucher, and print its receipt.
+        Order order2 = new Order("1002", customer2);
+        order2.addItem(hotChocolate);
+        order2.addItem(beefTapa);
+        order2.computeTotal(20.00);
+        order2.printReceipt();
+    }
+}
+
+/**
+ * Represents a customer who can earn loyalty points.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public class Customer {
+    private String name;
+    private boolean student;
+    private int loyaltyPoints;
+
+    /** Creates a non-student customer with a default name. */
+    public Customer() {
+        this("Unknown Customer", false);
+    }
+
+    /**
+     * Creates a non-student customer with the supplied name.
+     * @param name customer name
+     */
+    public Customer(String name) {
+        this(name, false);
+    }
+
+    /**
+     * Creates a customer with a name and student status.
+     * @param name customer name
+     * @param student true when the customer is a student
+     */
+    public Customer(String name, boolean student) {
+        setName(name);
+        this.student = student;
+        loyaltyPoints = 0;
+    }
+
+    /**
+     * Adds a specified number of loyalty points.
+     * @param points points to add
+     */
+    public void addPoints(int points) {
+        if (points > 0) loyaltyPoints += points;
+    }
+
+    /**
+     * Adds one point for every 50 pesos spent.
+     * @param amountSpent amount paid in pesos
+     */
+    public void addPoints(double amountSpent) {
+        if (amountSpent > 0) loyaltyPoints += (int) (amountSpent / 50);
+    }
+
+    /** @return customer name */
+    public String getName() { return name; }
+
+    /**
+     * Updates the customer name when it is not blank.
+     * @param name new customer name
+     */
+    public void setName(String name) {
+        if (name != null && !name.trim().isEmpty()) this.name = name;
+    }
+
+    /** @return true when the customer is a student */
+    public boolean isStudent() { return student; }
+
+    /**
+     * Updates the customer's student status.
+     * @param student new student status
+     */
+    public void setStudent(boolean student) { this.student = student; }
+
+    /** @return current loyalty points */
+    public int getLoyaltyPoints() { return loyaltyPoints; }
+
+    /**
+     * Sets loyalty points when the value is not negative.
+     * @param loyaltyPoints new loyalty-point balance
+     */
+    public void setLoyaltyPoints(int loyaltyPoints) {
+        if (loyaltyPoints >= 0) this.loyaltyPoints = loyaltyPoints;
+    }
+}
+
+%PDF-1.4
+%���� ReportLab Generated PDF document (opensource)
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 5 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/Contents 11 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+5 0 obj
+<<
+/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+6 0 obj
+<<
+/Contents 12 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+7 0 obj
+<<
+/Contents 13 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/PageMode /UseNone /Pages 10 0 R /Type /Catalog
+>>
+endobj
+9 0 obj
+<<
+/Author (\(anonymous\)) /CreationDate (D:20261109064417+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261109064417+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
+>>
+endobj
+10 0 obj
+<<
+/Count 3 /Kids [ 4 0 R 6 0 R 7 0 R ] /Type /Pages
+>>
+endobj
+11 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 552
+>>
+stream
+Gat%^>u03/'Sc)J/'_]aFXD:e`o2qDQo4u!-<s52RU!mlTK6t#G8gL1[\6!7==^WjffJR^kOIkj+`e$H^JFo;)`TgrJ-e'AJ175>S3b[NRfkr)B*?IO;S#S*,"?1gjX"!s$Ar:,Cm$?&LYmr(J]Fpr^2b5#@-0N`iqjH!d@;uSi_9gFn^70oFUcA]V`-WU0OL>LMshJ>T`/(QebLS+m\0Fb?X@>)k,Sb'bn4Mi*p:PhK)]o@i"Ye<kn!cK_gHn>B7-Z`DY<K!eR(=mcH%#=*,I[\:r*JW"e4Xj'Pq+H&C5u]H\![<<',1m0=[1#JKVUCLo.E'8e+\jHt]A?>.k.b.1l.n7hP95'RU=oQGRgVInTSfqX)+g;1rpYU:diYUYoXp-euFGBcM:L?CEtQE"S^:RQV$fZ\b</F%>nJLU>nj<G/FMJK*Oo8u6lEh39tP6/R8rEFYf4J6q*E[r<8u"C'jIfUZP+ptBOc+^kFXIj^#snm9BDXS(jEl!]"l))^)Q1Z_8:?TdV!hthqAkDsuo`]=3em&`RWI"C?#kRnig~>endstream
+endobj
+12 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 1785
+>>
+stream
+Gatn&gMZ%0&;KZF'E]&-3ea>$o%A5DRmg7$Lq@Z]Mfg[dM6aWaM(2(Wl[AWT:^>_oGAS1V!CIG0_tiGeiA^fZ5Cr]l14Zt?r;8a/+G</b6/V"GiXtSp=8uM/oupk.%4C*[J.Xu)LVj,DiNVd*p%f#>#hi!mH%m8m&<(>@0Vn(sJHsNIF-rphie<*`083psZU3d9)A\rQnIq>g*C%Tgp@c`P=::Y0^_q,]I59NH$p$2dN8XtC*lIU7'9B5_3eP^h2n9$KPXD.p>-eW8B#*mFcQT<S:>q&mjb)Yt([c6-ZSh3gS/JB:>o[@[$a\8`Q#YVsI-EcZ)#n_jB.W#N7H$,tJS>UVk03B57,ElT<M4W2\`()QW8>pD+]/U0Tm]l,VeBl+SUi@4[+LC6(et:%EkSk]McFJ,[!+WD)klm9\G%OH/!c34,.NR@fT]N((D2AB';[L_"h.RQD5s$R"kPR</94p.^$`O7)Yb,7'pA%F;XJ.Z('[W`j_hh(AVE2o]e-UIp_iFQj7*G!KCPf).NQ;lDXl*!YIE#OIN!E4.kp-_l*Onuc$??aPYT(Qa6YQ&4J7.jPfB]"iRsC3[5F,)L8d+k)*tQq$]Xq11a(>78\9[CM4CB2i0g9HgC-Ms%`UeR!b3'P/AW'ui.(94\Hm3d=?X,/iiB;_o5s`@+u1MgbKf[iVWQG"`Nl>NjXiiA^V"Q.9t@:t_ud4VE@j!>RY)`"&go'oF'rGHr@Y1f\:5s/LHO[%=G?m&$gVY4,=PFC_\BH44Z=\6ORi/^oi<"!Hpr,pVJa[7ggJ)p/ZW//FIXNioBq'VT)iIV)P$lV+'f675*&fS9$*+ZkC$@-W)TNN)b^^B]+eb5WJbng*2,Y6@0.<oJa',UFUDo%0h&+41=`]90@`E_AAb49F9?n=;)5":O^W7Rq&7Sc3CqBf*JQne)hT%rQmHA)3<]6Y$%d_X.D`QXgJ$iU'dg!L=&b:tZ,kNEl<,YN=0-4<T^9,&Q_hNPa6VF&'f2moIW)NWbTlpj\;@R@.&?8g8X.Z9:"$qL7)0QpU(l9@GJ_/aI33'Ne@QFWP=l7<:b$XY@=&=-4j)c/mV;<uKASP<]pGuR=->5?]c'&9WNe%>AWlhq4SQ##HE^P4.4_6@V9nS'<\Wm)38F^8R'Une*tD)>lO>LbnPgP;$7D.?(C[C'mu^*#+`WH/El4`I<hYogD*$YmlU":JAKp<&4KD`R!iJ4.Ee<$$V0!#F(P-AF&4e-a<TdI]aDE4f>K4T5(<0qR3P`MR$"2_KS$b2C>hH*4*mEqfppma[MUTW5NJ!G7_TGsoO=HnDlFdk]BM;A7#i<WK7MDt2UEilHG7(@aE>_XDF^57Z<_-C_Zn[P]HEP^;UHiDe2n!/IE_9[(iVQB/:?6UQfhH]M`sUr)<jX['KK/7>D[=1XG.\%i13rn%s$.]VP>Y"&EI"]<,r#<f;P1q2*d-nY<dM?$ZXS"=-EhZ@3UC?2Q[-"3%tX0SYRJD]gu]#/n1>F/A`oo<ia21?&CO)>"$YStpqbkWK!"VY*oZKn&Gi!emuE\QC^!tci8`Up>^$*U3o_sGUUP`*_>`.k.\b8a1[?r".g7#eh"j5BC>7c$U2q,VA%!KI07>9NQHI\kHGSfQi1!-Po*#')jn0=*H@\$/9jBe6DBGbfNX&m/p\+-Mfq$"<s+isC`S_53Sa#]\46]gO4\JeN,cf%B%Jco?a\<8dh/T%%JecL,_c7fR)B0Rl\`l1jAj9Zds#@PC4P97$Ke3R#(N0d.gjnr+Aq(2gIumoSoe43oP?e~>endstream
+endobj
+13 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 926
+>>
+stream
+Gat=(_/@aV'YO/jk(6Q/$(Ge$[`>fXJHV^34ndlX?8aEm*GfATrHlOZ]*5Q>;&*e(P+Up^9]!Dp1HoCLeNIlZ^q1+'auL4Hb*1ffMpHX_3;@bq5#bSSU:Q_!PW7^XGu^-Ba5^;dp8\9>PWM]Jmg1sDH(G$!o)s8^>i<1n>pjeA!Um.6UQ+90L9`\N]5ESIg$fo<HS"$Lp>>Z3Thq;P4A2B::E1ctQ:4Lf^06):,_:p^W$Rgr20O]+$GQ@?4ERJf5]AChAD,K=d<S#pRYHK46n`_2CSLHWgOX)t-FRfN(^#mA'c\^leMb2TdBTNCqBg.f"W"3HR6klKRP$/#csB\A\9JSg)3e3"n:g6nV/D9TXq',=h2;4%B/`]!SI2Tc-Lk)YS\UIYU0?L'3f<S037+]/K.ujc`lP_p<V(q*2\q$)3gKKFP@E-^&-#h3cDOS-qI,>'_jb[jGkW++Z%cG:k`nmIdP,jK:YLs[[heF,Akh`Rh)2eWSu@noiC4DgH^)^gM!>=pZ>>6&l:e=c`JIR;o8]p9U`3Ae]o3r>l)WNC$S*aYY9dHpq%8mY>sC":r*I%NBh]rg3!c]Qd=[c.SskT;(tQ$k]^.:2S\6^R-Nu]F%AL`th+fej-b#lL%p$_H&UJT[e%#%-#1YXP\@j/J.m-5b(n!e7'hR2][F0:uV#S%gS,RB/)S$iB^M)sY0tV\(o$[ZtR2*!#FV2+RF#73janWO>e*?;QVXnQknlTisBPo4gV]#1bFDApS9d=)Jm`%<TZ@F@<,3UH=CK_NX$=$;^%-+WP+`Ku5i!-H3kmZFF@7t$*])gusp;X-#LoHldil7fsp&)lNj#.&s\"BC&/4YkV&>"i#%CU0H%iKO@YPLcK>Qa'Cm+UP^@RNFqmQ-"eZtYK]U=`@62E3):oM"3c:&^+P%XnM6:$%E~>endstream
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000061 00000 n 
+0000000112 00000 n 
+0000000219 00000 n 
+0000000331 00000 n 
+0000000536 00000 n 
+0000000641 00000 n 
+0000000846 00000 n 
+0000001051 00000 n 
+0000001120 00000 n 
+0000001400 00000 n 
+0000001472 00000 n 
+0000002115 00000 n 
+0000003992 00000 n 
+trailer
+<<
+/ID 
+[<3b7096d4b53e4963023bca73a009de15><3b7096d4b53e4963023bca73a009de15>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 9 0 R
+/Root 8 0 R
+/Size 14
+>>
+startxref
+5009
+%%EOF
+
+/**
+ * Represents a rice meal with optional upsizing and extra sides.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public class Meal extends MenuItem {
+    private boolean upsized;
+    private int extraSides;
+
+    /** Creates a regular meal with no extra sides. */
+    public Meal() {
+        super();
+        upsized = false;
+        extraSides = 0;
+    }
+
+    /**
+     * Creates a meal with the supplied details.
+     * @param name meal name
+     * @param basePrice meal base price
+     * @param itemCode meal code
+     * @param upsized whether the meal is upsized
+     * @param extraSides number of extra sides
+     */
+    public Meal(String name, double basePrice, String itemCode,
+                boolean upsized, int extraSides) {
+        super(name, basePrice, itemCode);
+        this.upsized = upsized;
+        this.extraSides = 0;
+        setExtraSides(extraSides);
+    }
+
+    /**
+     * Computes the meal price including upgrades and extra sides.
+     * @return final meal price
+     */
+    @Override
+    public double computePrice() {
+        double price = basePrice;
+        // Upsizing adds 20 pesos.
+        if (upsized) {
+            price += 20;
+        }
+        return price + (12 * extraSides);
+    }
+
+    /**
+     * Returns the meal description including its options.
+     * @return meal description
+     */
+    @Override
+    public String getDescription() {
+        String sizeStatus = upsized ? "Upsized" : "Regular";
+        String sideLabel = extraSides == 1 ? "side" : "sides";
+        return super.getDescription() + " " + sizeStatus + ", "
+                + extraSides + " " + sideLabel;
+    }
+
+    /** @return true when the meal is upsized */
+    public boolean isUpsized() { return upsized; }
+
+    /**
+     * Changes the meal's upsize status.
+     * @param upsized new upsize status
+     */
+    public void setUpsized(boolean upsized) { this.upsized = upsized; }
+
+    /** @return number of extra sides */
+    public int getExtraSides() { return extraSides; }
+
+    /**
+     * Sets the number of extra sides; negative values are rejected.
+     * @param extraSides requested number of extra sides
+     */
+    public void setExtraSides(int extraSides) {
+        // Extra sides cannot be negative.
+        if (extraSides < 0) {
+            System.out.println("Error: extra sides cannot be negative.");
+        } else {
+            this.extraSides = extraSides;
+        }
+    }
+}
+
+/**
+ * Abstract parent class for all campus cafe menu items.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public abstract class MenuItem {
+    protected String name;
+    protected double basePrice;
+    private String itemCode;
+
+    /** Creates an unnamed menu item with a zero price and N/A code. */
+    public MenuItem() {
+        name = "Unnamed Item";
+        basePrice = 0.0;
+        itemCode = "N/A";
+    }
+
+    /**
+     * Creates a menu item with the supplied details.
+     * @param name item name
+     * @param basePrice item base price
+     * @param itemCode item code
+     */
+    public MenuItem(String name, double basePrice, String itemCode) {
+        this();
+        setName(name);
+        setBasePrice(basePrice);
+        setItemCode(itemCode);
+    }
+
+    /**
+     * Computes the final price for a particular menu item.
+     * @return computed item price
+     */
+    public abstract double computePrice();
+
+    /**
+     * Returns the item's basic description.
+     * @return item name and code
+     */
+    public String getDescription() {
+        return name + " [" + itemCode + "]";
+    }
+
+    /** @return the item name */
+    public String getName() { return name; }
+
+    /**
+     * Updates the item name when the supplied value is valid.
+     * @param name new item name
+     */
+    public void setName(String name) {
+        if (name != null && !name.trim().isEmpty()) this.name = name;
+    }
+
+    /** @return the item's base price */
+    public double getBasePrice() { return basePrice; }
+
+    /**
+     * Updates the base price; negative values are rejected.
+     * @param basePrice new base price
+     */
+    public void setBasePrice(double basePrice) {
+        // Reject a negative price and preserve the previous valid value.
+        if (basePrice < 0) {
+            System.out.println("Error: base price cannot be negative.");
+        } else {
+            this.basePrice = basePrice;
+        }
+    }
+
+    /** @return the item's code */
+    public String getItemCode() { return itemCode; }
+
+    /**
+     * Updates the item code when it is not blank.
+     * @param itemCode new item code
+     */
+    public void setItemCode(String itemCode) {
+        if (itemCode != null && !itemCode.trim().isEmpty()) this.itemCode = itemCode;
+    }
+}
+
+/**
+ * Represents an order containing up to three menu items for one customer.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public class Order {
+    private Customer customer;
+    private MenuItem item1;
+    private MenuItem item2;
+    private MenuItem item3;
+    private int itemCount;
+    private String orderId;
+    private double appliedVoucher;
+
+    /**
+     * Creates an order for a customer.
+     * @param orderId order identification
+     * @param customer customer placing the order
+     */
+    public Order(String orderId, Customer customer) {
+        this.orderId = orderId;
+        this.customer = customer;
+        item1 = null;
+        item2 = null;
+        item3 = null;
+        itemCount = 0;
+        appliedVoucher = 0.0;
+    }
+
+    /**
+     * Adds a menu item to the first empty slot.
+     * @param item menu item to add
+     * @return true if added; otherwise false
+     */
+    public boolean addItem(MenuItem item) {
+        if (item == null) {
+            System.out.println("Invalid menu item.");
+            return false;
+        } else if (item1 == null) {
+            item1 = item;
+            itemCount++;
+            return true;
+        } else if (item2 == null) {
+            item2 = item;
+            itemCount++;
+            return true;
+        } else if (item3 == null) {
+            item3 = item;
+            itemCount++;
+            return true;
+        } else {
+            System.out.println("Order is full. Cannot add "
+                    + item.getName() + ".");
+            return false;
+        }
+    }
+
+    /**
+     * Calculates the sum of all item prices.
+     * @return order subtotal
+     */
+    public double computeSubtotal() {
+        double subtotal = 0.0;
+        // Each object uses its own overridden computePrice method.
+        if (item1 != null) subtotal += item1.computePrice();
+        if (item2 != null) subtotal += item2.computePrice();
+        if (item3 != null) subtotal += item3.computePrice();
+        return subtotal;
+    }
+
+    /**
+     * Calculates the total after a student discount, if applicable.
+     * @return total after discount
+     */
+    public double computeTotal() {
+        appliedVoucher = 0.0;
+        double subtotal = computeSubtotal();
+        // Students receive a 10 percent discount.
+        if (customer.isStudent()) {
+            return subtotal - (subtotal * 0.10);
+        } else {
+            return subtotal;
+        }
+    }
+
+    /**
+     * Calculates the discounted total after subtracting a voucher.
+     * @param voucher voucher amount in pesos
+     * @return final total, never below zero
+     */
+    public double computeTotal(double voucher) {
+        double total = computeTotal();
+        // Negative voucher values are not accepted.
+        if (voucher < 0) {
+            appliedVoucher = 0.0;
+        } else {
+            appliedVoucher = voucher;
+        }
+        total -= appliedVoucher;
+        // A voucher cannot make the order total negative.
+        if (total < 0) total = 0.0;
+        return total;
+    }
+
+    /**
+     * Prints the receipt and updates the customer's loyalty points.
+     */
+    public void printReceipt() {
+        double subtotal = computeSubtotal();
+        double discount = customer.isStudent() ? subtotal * 0.10 : 0.0;
+        double total = subtotal - discount - appliedVoucher;
+        if (total < 0) total = 0.0;
+
+        String studentLabel = customer.isStudent() ? " (Student)" : "";
+        System.out.println("\\nOrder #" + orderId + " — "
+                + customer.getName() + studentLabel);
+        printItem(item1);
+        printItem(item2);
+        printItem(item3);
+        System.out.printf("Subtotal: %.2f%n", subtotal);
+
+        if (customer.isStudent()) {
+            System.out.printf("Student discount (10%%): -%.2f%n", discount);
+        }
+        if (appliedVoucher > 0) {
+            System.out.printf("Voucher: -%.2f%n", appliedVoucher);
+        }
+        System.out.printf("TOTAL: %.2f%n", total);
+
+        // Loyalty points are awarded from the final amount paid.
+        customer.addPoints(total);
+        System.out.println("Loyalty points: " + customer.getLoyaltyPoints());
+    }
+
+    /**
+     * Prints one item and its computed price.
+     * @param item item to print
+     */
+    private void printItem(MenuItem item) {
+        if (item != null) {
+            System.out.printf("%-43s %.2f%n",
+                    item.getDescription(), item.computePrice());
+        }
+    }
+}
+
+/**
+ * Represents a baked item that may be warmed for an extra fee.
+ * @author Romer Enardecido
+ * @version 1.0
+ */
+public class Pastry extends MenuItem {
+    private boolean warmed;
+
+    /** Creates a pastry with default menu-item values that is not warmed. */
+    public Pastry() {
+        super();
+        warmed = false;
+    }
+
+    /**
+     * Creates a pastry with the supplied details.
+     * @param name pastry name
+     * @param basePrice pastry base price
+     * @param itemCode pastry code
+     * @param warmed whether the pastry is warmed
+     */
+    public Pastry(String name, double basePrice, String itemCode, boolean warmed) {
+        super(name, basePrice, itemCode);
+        this.warmed = warmed;
+    }
+
+    /**
+     * Computes the pastry price, including the warming fee when applicable.
+     * @return final pastry price
+     */
+    @Override
+    public double computePrice() {
+        // Warming adds 10 pesos to the pastry price.
+        if (warmed) {
+            return basePrice + 10;
+        }
+        return basePrice;
+    }
+
+    /**
+     * Returns the pastry description and warming status.
+     * @return pastry description
+     */
+    @Override
+    public String getDescription() {
+        if (warmed) {
+            return super.getDescription() + " (Warmed)";
+        }
+        return super.getDescription();
+    }
+
+    /** @return true when the pastry is warmed */
+    public boolean isWarmed() { return warmed; }
+
+    /**
+     * Changes the pastry's warming status.
+     * @param warmed new warming status
+     */
+    public void setWarmed(boolean warmed) { this.warmed = warmed; }
+}
+
+Order is full. Cannot add Cookie.
+Error: base price cannot be negative.
+\nOrder #1001 — Ana Reyes (Student)
+Iced Latte [B-01] Size: L                   120.00
+Ensaymada [P-01] (Warmed)                   55.00
+Chicken Adobo [M-01] Upsized, 1 side        142.00
+Subtotal: 317.00
+Student discount (10%): -31.70
+TOTAL: 285.30
+Loyalty points: 5
+Error: base price cannot be negative.
+\nOrder #1002 — Ben Cruz
+Hot Chocolate [B-02] Size: M                95.00
+Beef Tapa [M-02] Regular, 0 sides           130.00
+Subtotal: 225.00
+Voucher: -20.00
+TOTAL: 205.00
+Loyalty points: 4
